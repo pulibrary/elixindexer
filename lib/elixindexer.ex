@@ -22,7 +22,6 @@ defmodule Elixindexer do
     records
     |> Enum.map(&parse_record/1)
     |> Enum.filter(fn(x) -> x != nil end)
-    |> Enum.to_list
   end
 
   def parse_record({:xmlel, "record", _, fields}) do
