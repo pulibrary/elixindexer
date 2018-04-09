@@ -1,6 +1,11 @@
 %{
   "benchfella": {:hex, :benchfella, "0.3.5", "b2122c234117b3f91ed7b43b6e915e19e1ab216971154acd0a80ce0e9b8c05f5", [:mix], [], "hexpm"},
+  "elixir_make": {:hex, :elixir_make, "0.4.1", "6628b86053190a80b9072382bb9756a6c78624f208ec0ff22cb94c8977d80060", [:mix], [], "hexpm"},
   "exprintf": {:hex, :exprintf, "0.2.1", "b7e895dfb00520cfb7fc1671303b63b37dc3897c59be7cbf1ae62f766a8a0314", [:mix], [], "hexpm"},
   "exprof": {:hex, :exprof, "0.2.2", "19fead375683f959b45b11dd30d2c48143347970aeabd05b2dde05c50d1f63dc", [:mix], [{:exprintf, "~> 0.2", [hex: :exprintf, repo: "hexpm", optional: false]}], "hexpm"},
+  "fast_xml": {:git, "https://github.com/processone/fast_xml.git", "020dc9b438281b6350a6a397519fd626903881f9", []},
+  "flow": {:hex, :flow, "0.13.0", "7188ef047c6831ffb2f25ec0cef9bef02e7ae520632a64debdb65ae96bdc223e", [:mix], [{:gen_stage, "~> 0.13.0", [hex: :gen_stage, repo: "hexpm", optional: false]}], "hexpm"},
+  "gen_stage": {:hex, :gen_stage, "0.13.1", "edff5bca9cab22c5d03a834062515e6a1aeeb7665fb44eddae086252e39c4378", [:mix], [], "hexpm"},
+  "p1_utils": {:hex, :p1_utils, "1.0.11", "a471f80644d4b464fa67572affddda7e95df5d4b099624b8907f5726e8a1769c", [:rebar3], [], "hexpm"},
   "sweet_xml": {:git, "https://github.com/kbrw/sweet_xml.git", "b966d571a28928f4bf784b30867ada5c407d2ff3", []},
 }

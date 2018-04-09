@@ -22,3 +22,5 @@ erl_crash.dump
 # Ignore package tarball (built via "mix hex.build").
 elixindexer-*.tar
 
+/bench/
+1520931620.xml
