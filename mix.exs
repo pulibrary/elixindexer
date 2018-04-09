@@ -24,7 +24,6 @@ defmodule Elixindexer.MixProject do
     [
       {:sweet_xml, git: "https://github.com/kbrw/sweet_xml.git"},
       {:benchfella, "~> 0.3.0", only: [:dev, :test]},
-      {:exprof, "~> 0.2.0", only: [:dev, :test]},
       {:fast_xml, github: "processone/fast_xml"},
       {:flow, "~> 0.13"}
       # {:dep_from_hexpm, "~> 0.3.0"},
