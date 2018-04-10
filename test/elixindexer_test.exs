@@ -15,12 +15,10 @@ defmodule ElixindexerTest do
   end
 
   test "parse_json" do
-    records_json = Elixindexer.parse_json("record.json")
+    records_json = Elixindexer.Json.parse_records("record.json")
     assert length(records_json) == 1
     record = hd(records_json)
-    assert(%{id: "1984168"} = record)
+    assert(%{id: "345682"} = record)
+    assert(%{title: "Opportunity in crisis : money and power in world politics 1986-88 / Michael M. White."} = record)
   end
-
-
-
 end

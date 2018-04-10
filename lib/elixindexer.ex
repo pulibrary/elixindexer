@@ -24,19 +24,6 @@ defmodule Elixindexer do
     |> Enum.filter(fn(x) -> x != nil end)
   end
 
-  def parse_json(file_name) do
-    {:ok, content} = File.read(file_name)
-    Poison.Parser.parse!(content)
-    |> Enum.map(&parse_json_record/1) 
-  end
-
-  def parse_json_record(json) do
-    id = json["fields"]
-    |>Enum.find(fn(x) -> Map.has_key?(x,"001") end)
-    |>Map.fetch!("001")
-    %{id: id}
-  end
-
   def parse_record({:xmlel, "record", _, fields}) do
     build_record(fields)
   end
@@ -82,6 +69,4 @@ defmodule Elixindexer do
   def get_data(_, _) do
     nil
   end
-
-  # {:xmlel, "datafield", [{"ind1", "1"}, {"ind2", "0"}, {"tag", "245"}],
 end

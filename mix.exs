@@ -26,7 +26,7 @@ defmodule Elixindexer.MixProject do
       {:benchfella, "~> 0.3.0", only: [:dev, :test]},
       {:fast_xml, github: "processone/fast_xml"},
       {:flow, "~> 0.13"},
-      {:poison, "~> 3.1"}
+      {:jason, "~> 1.0"}
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
     ]
