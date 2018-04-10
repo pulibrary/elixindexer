@@ -22,7 +22,6 @@ defmodule Elixindexer.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:sweet_xml, git: "https://github.com/kbrw/sweet_xml.git"},
       {:benchfella, "~> 0.3.0", only: [:dev, :test]},
       {:flow, "~> 0.13"}
       # {:dep_from_hexpm, "~> 0.3.0"},
