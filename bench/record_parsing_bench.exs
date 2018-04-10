@@ -2,6 +2,6 @@
    use Benchfella
 
    bench "parse large file" do
-     Elixindexer.parse_records("1520931620.xml")
+     Elixindexer.parse_records("large_set.mrc")
    end
  end

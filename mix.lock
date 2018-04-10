@@ -6,6 +6,7 @@
   "fast_xml": {:git, "https://github.com/processone/fast_xml.git", "020dc9b438281b6350a6a397519fd626903881f9", []},
   "flow": {:hex, :flow, "0.13.0", "7188ef047c6831ffb2f25ec0cef9bef02e7ae520632a64debdb65ae96bdc223e", [:mix], [{:gen_stage, "~> 0.13.0", [hex: :gen_stage, repo: "hexpm", optional: false]}], "hexpm"},
   "gen_stage": {:hex, :gen_stage, "0.13.1", "edff5bca9cab22c5d03a834062515e6a1aeeb7665fb44eddae086252e39c4378", [:mix], [], "hexpm"},
+  "nimble_parsec": {:git, "https://github.com/plataformatec/nimble_parsec.git", "396354cf67c7ae3e14b6b9738a412ce2d72632e5", []},
   "p1_utils": {:hex, :p1_utils, "1.0.11", "a471f80644d4b464fa67572affddda7e95df5d4b099624b8907f5726e8a1769c", [:rebar3], [], "hexpm"},
   "sweet_xml": {:git, "https://github.com/kbrw/sweet_xml.git", "b966d571a28928f4bf784b30867ada5c407d2ff3", []},
 }
