@@ -16,13 +16,8 @@ defmodule MarcParser do
   @end_of_field 0x1E
   @subfield_indicator 0x1F
   def parse_marc(marc_handle) do
-    record_length = record_length(marc_handle)
-    if record_length > 0 do
-      first_record = extract_record(marc_handle, record_length)
-      [ parse_record(first_record) | parse_marc(marc_handle) ]
-    else
-      []
-    end
+    MarcParser.Stream.from_handle(marc_handle)
+    |> Stream.map(&parse_record/1)
   end
 
   def parse_record(marc_record) do
@@ -33,14 +28,6 @@ defmodule MarcParser do
     num_fields = div(byte_size(directory), @directory_entry_length)
     fields = Enum.reduce(0..(num_fields-1), %{}, &extract_field(marc_record, directory, base_address, &1, &2))
     %MarcParser.Record{fields: fields}
-  end
-
-  def record_length(marc_handle) do
-    record_length = IO.binread(marc_handle, 5)
-    case record_length do
-      :eof -> 0
-      _ -> String.to_integer(record_length)
-    end
   end
 
   def extract_field(marc_record, directory, base_address, field_num, acc) do
@@ -94,10 +81,4 @@ defmodule MarcParser do
   end
 
 
-  def extract_record(marc_handle, record_length) do
-    record_length_s = String.pad_leading(Integer.to_string(record_length), 5, ["0"])
-    record = marc_handle
-    |> IO.binread(record_length-5)
-    record_length_s <> record
-  end
 end
