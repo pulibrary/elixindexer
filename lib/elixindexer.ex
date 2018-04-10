@@ -8,18 +8,6 @@ defmodule Elixindexer do
   def solrize(%MarcParser.Record{fields: fields}) do
     fields
     |> Enum.reduce(%{}, &build_solr_field/2)
-    #
-    # id = fields["001"].value
-    #
-    # title =
-    #   fields["245"]
-    #   |> get_subfields("abcfghknps")
-    #   |> Enum.join(" ")
-    #
-    # %{
-    #   id: id,
-    #   title: title
-    # }
   end
 
   def build_solr_field({"001", %MarcParser.ControlField{value: value}}, acc) do

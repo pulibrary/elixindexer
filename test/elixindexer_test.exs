@@ -2,10 +2,6 @@ defmodule ElixindexerTest do
   use ExUnit.Case
   doctest Elixindexer
 
-  test "greets the world" do
-    assert Elixindexer.hello() == :world
-  end
-
   test "parse_records" do
     records = Elixindexer.parse_records("small_set.mrc")
     assert length(records) == 31
