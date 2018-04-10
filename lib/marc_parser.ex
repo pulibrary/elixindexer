@@ -17,7 +17,8 @@ defmodule MarcParser do
   @subfield_indicator 0x1F
   def parse_marc(marc_handle) do
     MarcParser.Stream.from_handle(marc_handle)
-    |> Stream.map(&parse_record/1)
+    |> Flow.from_enumerable
+    |> Flow.map(&parse_record/1)
   end
 
   def parse_record(marc_record) do
