@@ -83,7 +83,7 @@ defmodule MarcParser do
 
   def generate_data_field(tag, field_data) do
     [indicators | subfields] = field_data |> :binary.split([<<@subfield_indicator>>], [:global])
-    [indicator1, indicator2] = indicators |> to_charlist
+    [indicator1, indicator2] = indicators |> String.codepoints
     subfields = subfields
                 |> Enum.reduce(%{}, &generate_subfield/2)
     %MarcParser.DataField{tag: tag, indicator1: indicator1, indicator2: indicator2, subfields: subfields}
