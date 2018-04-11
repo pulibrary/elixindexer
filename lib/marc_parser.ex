@@ -13,7 +13,6 @@ defmodule MarcParser do
   end
   @leader_length 24
   @directory_entry_length 12
-  @subfield_indicator <<0x1F>>
   def parse_marc(marc_handle) do
     MarcParser.Stream.from_handle(marc_handle)
     |> Flow.from_enumerable
