@@ -9,7 +9,7 @@ defmodule MarcParser do
     defstruct code: nil, value: nil
   end
   defmodule Record do
-    defstruct fields: []
+    defstruct fields: [], leader: nil
   end
   @leader_length 24
   @directory_entry_length 12
@@ -26,7 +26,7 @@ defmodule MarcParser do
     directory = marc_record |> Kernel.binary_part(@leader_length, base_address-@leader_length-1)
     num_fields = div(byte_size(directory), @directory_entry_length)
     fields = Enum.reduce(0..(num_fields-1), %{}, &extract_field(marc_record, directory, base_address, &1, &2))
-    %MarcParser.Record{fields: fields}
+    %MarcParser.Record{leader: leader, fields: fields}
   end
 
   def extract_field(marc_record, directory, base_address, field_num, acc) do
