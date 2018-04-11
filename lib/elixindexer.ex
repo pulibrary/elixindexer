@@ -1,7 +1,7 @@
 defmodule Elixindexer do
   def parse_records(file_name) do
     {:ok, handle} = File.open(file_name, read_ahead: 512*1024)
-    output = MarcParser.parse_marc(handle)
+    MarcParser.parse_marc(handle)
     |> Flow.partition
     |> Flow.map(&solrize/1)
     |> Enum.to_list

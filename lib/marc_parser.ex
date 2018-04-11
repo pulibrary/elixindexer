@@ -13,7 +13,6 @@ defmodule MarcParser do
   end
   @leader_length 24
   @directory_entry_length 12
-  @end_of_field 0x1E
   @subfield_indicator 0x1F
   def parse_marc(marc_handle) do
     MarcParser.Stream.from_handle(marc_handle)
@@ -22,7 +21,6 @@ defmodule MarcParser do
   end
 
   def parse_record(marc_record) do
-    marc_record
     leader = marc_record |> Kernel.binary_part(0, @leader_length)
     base_address = leader |> Kernel.binary_part(12, 5) |> String.to_integer
     directory = marc_record |> Kernel.binary_part(@leader_length, base_address-@leader_length-1)
@@ -39,7 +37,6 @@ defmodule MarcParser do
     field_length = Kernel.binary_part(entry, 3, 4) |> String.to_integer
     field_offset = Kernel.binary_part(entry, 7, 5) |> String.to_integer
     field_start = base_address + field_offset
-    field_end = field_start + field_length-1
     field_data = Kernel.binary_part(marc_record, field_start, field_length) |> remove_field_end
     acc
     |> Map.put(tag, generate_field(tag, field_data))
