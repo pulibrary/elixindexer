@@ -85,7 +85,7 @@ defmodule MarcParser do
     [indicators | subfields] = field_data |> :binary.split([<<@subfield_indicator>>], [:global])
     [indicator1, indicator2] = indicators |> String.codepoints
     subfields = subfields
-                |> Enum.reduce(%{}, &generate_subfield/2)
+                |> Enum.reduce([], &generate_subfield/2)
     %MarcParser.DataField{tag: tag, indicator1: indicator1, indicator2: indicator2, subfields: subfields}
   end
 
@@ -93,14 +93,15 @@ defmodule MarcParser do
     if byte_size(subfield_data) == 0 do
       acc
     else
-      tag = binary_part(subfield_data, 0, 1)
+      code = binary_part(subfield_data, 0, 1)
       value = binary_part(subfield_data, 1, byte_size(subfield_data)-1)
-      field = %MarcParser.SubField{code: tag, value: value}
-      case Map.fetch(acc, tag) do
-        :error        -> acc |> Map.put(tag, [field])
-        {:ok, value}  -> acc |> Map.put(tag, value ++ [field])
-        _             -> acc
-      end
+      field = %MarcParser.SubField{code: code, value: value}
+      acc ++ [field]
+      #case Map.fetch(acc, code) do
+      #  :error        -> acc |> Map.put(code, [field])
+      #  {:ok, value}  -> acc |> Map.put(code, value ++ [field])
+      #  _             -> acc
+      #end
     end
   end
 

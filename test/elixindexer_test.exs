@@ -5,8 +5,11 @@ defmodule ElixindexerTest do
   test "parse_records" do
     records = Elixindexer.parse_records("small_set.mrc")
     assert length(records) == 31
-    record = hd(records)
-    assert(%{id: "6000001"} = record)
-    assert(%{title: "Bach und die deutsche Tradition des Komponierens : Wirklichkeit und Ideologie ; Festschrift Martin Geck zum 70. Geburtstag ; Bericht über das 6. Dortmunder Bach-Symposion 2006 / herausgegeben von Reinmar Emans und Wolfram Steinbeck."} = record)
+    record = records |> Enum.find(fn(x) -> x.id == "6000001" end)
+    assert record.id == "6000001"
+    assert record.title_display == "Bach und die deutsche Tradition des Komponierens : Wirklichkeit und Ideologie ; Festschrift Martin Geck zum 70. Geburtstag ; Bericht über das 6. Dortmunder Bach-Symposion 2006 / herausgegeben von Reinmar Emans und Wolfram Steinbeck."
+    assert record.author_display == "Dortmunder Bach-Symposion (6th : 2006)"
   end
 end
+
+# 100aqbcdk:110abcdfgkln:111abcdfgklnpq
