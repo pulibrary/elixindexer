@@ -43,18 +43,15 @@ defmodule Elixindexer do
     acc
   end
 
-  defp get_subfields(%MarcParser.DataField{subfields: subfields}, fields) do
-  #graphemes = fields |> String.graphemes
-  #subfields
-  #|> Enum.filter(fn({k, v}) -> Enum.member?(graphemes, k))
-    IO.inspect(subfields)
-    fields
-    |> String.graphemes()
-    |> Enum.map(&get_subfield_value(subfields[&1]))
+  defp get_subfields(%MarcParser.DataField{subfields: subfields}, subfield_keys) do
+    graphemes = subfield_keys |> String.graphemes
+    subfields
+    |> Enum.filter(fn(x) -> Enum.member?(graphemes, x.code) end)
+    |> Enum.map(&get_subfield_value/1)
     |> Enum.filter(fn x -> x != nil end)
   end
 
-  defp get_subfield_value([%MarcParser.SubField{value: value}]) do
+  defp get_subfield_value(%MarcParser.SubField{value: value}) do
     value
   end
 
