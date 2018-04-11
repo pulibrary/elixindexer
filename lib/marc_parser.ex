@@ -42,12 +42,35 @@ defmodule MarcParser do
     |> Map.put(tag, generate_field(tag, field_data))
   end
 
+  def generate_field(tag = "001", field_data) do
+    generate_control_field(tag, field_data)
+  end
+  def generate_field(tag = "002", field_data) do
+    generate_control_field(tag, field_data)
+  end
+  def generate_field(tag = "003", field_data) do
+    generate_control_field(tag, field_data)
+  end
+  def generate_field(tag = "004", field_data) do
+    generate_control_field(tag, field_data)
+  end
+  def generate_field(tag = "005", field_data) do
+    generate_control_field(tag, field_data)
+  end
+  def generate_field(tag = "006", field_data) do
+    generate_control_field(tag, field_data)
+  end
+  def generate_field(tag = "007", field_data) do
+    generate_control_field(tag, field_data)
+  end
+  def generate_field(tag = "008", field_data) do
+    generate_control_field(tag, field_data)
+  end
+  def generate_field(tag = "009", field_data) do
+    generate_control_field(tag, field_data)
+  end
   def generate_field(tag, field_data) do
-    if tag |> String.to_integer <= 9 do
-      generate_control_field(tag, field_data)
-    else
-      generate_data_field(tag, field_data)
-    end
+    generate_data_field(tag, field_data)
   end
 
   def generate_control_field(tag, field_data) do
@@ -63,12 +86,16 @@ defmodule MarcParser do
   end
 
   def generate_subfield(subfield_data, acc) do
-    tag = binary_part(subfield_data, 0, 1)
-    value = binary_part(subfield_data, 1, byte_size(subfield_data)-1)
-    acc
-    |> Map.put(tag,
-               %MarcParser.SubField{code: tag, value: value}
-    )
+    if byte_size(subfield_data) == 0 do
+      acc
+    else
+      tag = binary_part(subfield_data, 0, 1)
+      value = binary_part(subfield_data, 1, byte_size(subfield_data)-1)
+      acc
+      |> Map.put(tag,
+                 %MarcParser.SubField{code: tag, value: value}
+      )
+    end
   end
 
   def remove_field_end(field_data) do
