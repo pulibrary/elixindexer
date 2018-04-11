@@ -43,7 +43,7 @@ defmodule MarcParser do
   end
 
   def generate_field(tag, field_data) do
-    if tag |> String.to_integer < 9 do
+    if tag |> String.to_integer <= 9 do
       generate_control_field(tag, field_data)
     else
       generate_data_field(tag, field_data)
