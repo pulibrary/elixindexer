@@ -4,7 +4,6 @@ defmodule Elixindexer do
     MarcParser.parse_marc(handle)
     |> Flow.partition
     |> Flow.map(&solrize/1)
-    |> Enum.to_list
     |> Enum.sort
   end
 
