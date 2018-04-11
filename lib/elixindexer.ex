@@ -22,7 +22,15 @@ defmodule Elixindexer do
             |> get_subfields("abcfghknps")
             |> Enum.join(" ")
     acc
-    |> Map.put(:title, title)
+    |> Map.put(:title_display, title)
+  end
+
+  defp build_solr_field({"111", [subfield]}, acc) do
+    author = subfield
+            |> get_subfields("abcdfgklnpq")
+            |> Enum.join(" ")
+    acc
+    |> Map.put(:author_display, author)
   end
 
   defp build_solr_field(_, acc) do
@@ -30,6 +38,10 @@ defmodule Elixindexer do
   end
 
   defp get_subfields(%MarcParser.DataField{subfields: subfields}, fields) do
+  #graphemes = fields |> String.graphemes
+  #subfields
+  #|> Enum.filter(fn({k, v}) -> Enum.member?(graphemes, k))
+    IO.inspect(subfields)
     fields
     |> String.graphemes()
     |> Enum.map(&get_subfield_value(subfields[&1]))

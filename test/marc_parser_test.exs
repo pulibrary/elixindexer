@@ -9,7 +9,8 @@ defmodule MarcParserTest do
     %{"500" => five_hundred_fields} = fields
     assert length(five_hundred_fields) == 2
     field = hd(five_hundred_fields)
-    assert %{subfields: %{"a" => [%{value: "International conference proceedings."}]}} = field
+    assert field.subfields == [%MarcParser.SubField{code: "a", value: "International conference proceedings."}]
+    #assert %{subfields: %{"a" => [%{value: "International conference proceedings."}]}} = field
     assert field.indicator1 == " "
     assert field.indicator2 == " "
     assert %{"245" => [%{indicator1: "1", indicator2: "0"}]} = fields
