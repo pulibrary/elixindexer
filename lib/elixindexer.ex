@@ -12,12 +12,12 @@ defmodule Elixindexer do
     |> Enum.reduce(%{}, &build_solr_field/2)
   end
 
-  defp build_solr_field({"001", %MarcParser.ControlField{value: value}}, acc) do
+  defp build_solr_field({"001", [%MarcParser.ControlField{value: value}]}, acc) do
     acc
     |> Map.put(:id, value)
   end
 
-  defp build_solr_field({"245", subfield}, acc) do
+  defp build_solr_field({"245", [subfield]}, acc) do
     title = subfield
             |> get_subfields("abcfghknps")
             |> Enum.join(" ")
@@ -36,7 +36,7 @@ defmodule Elixindexer do
     |> Enum.filter(fn x -> x != nil end)
   end
 
-  defp get_subfield_value(%MarcParser.SubField{value: value}) do
+  defp get_subfield_value([%MarcParser.SubField{value: value}]) do
     value
   end
 

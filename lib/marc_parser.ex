@@ -38,8 +38,12 @@ defmodule MarcParser do
     field_offset = Kernel.binary_part(entry, 7, 5) |> String.to_integer
     field_start = base_address + field_offset
     field_data = Kernel.binary_part(marc_record, field_start, field_length) |> remove_field_end
-    acc
-    |> Map.put(tag, generate_field(tag, field_data))
+    field = generate_field(tag, field_data)
+    case Map.fetch(acc, tag) do
+      :error        -> acc |> Map.put(tag, [field])
+      {:ok, value}  -> acc |> Map.put(tag, value ++ [field])
+      _             -> acc
+    end
   end
 
   def generate_field(tag = "001", field_data) do
@@ -91,10 +95,12 @@ defmodule MarcParser do
     else
       tag = binary_part(subfield_data, 0, 1)
       value = binary_part(subfield_data, 1, byte_size(subfield_data)-1)
-      acc
-      |> Map.put(tag,
-                 %MarcParser.SubField{code: tag, value: value}
-      )
+      field = %MarcParser.SubField{code: tag, value: value}
+      case Map.fetch(acc, tag) do
+        :error        -> acc |> Map.put(tag, [field])
+        {:ok, value}  -> acc |> Map.put(tag, value ++ [field])
+        _             -> acc
+      end
     end
   end
 
