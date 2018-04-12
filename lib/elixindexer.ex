@@ -98,7 +98,7 @@ defmodule Elixindexer do
   # Extract values from fields with given subfield codes.
   defp extract_field(fields, subfields) when is_list(fields) do
     fields
-    |> Enum.filter(fn (x)-> x.subfields != [] end)
+    |> Enum.filter(fn x -> x.subfields != [] end)
     |> Enum.map(&field_value(&1, String.graphemes(subfields)))
   end
 
