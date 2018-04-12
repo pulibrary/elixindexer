@@ -13,49 +13,122 @@ defmodule Elixindexer do
     |> Enum.sort
   end
 
-  defp solrize(%MarcParser.Record{fields: fields}) do
-    fields
-    |> Enum.reduce(%{}, &build_solr_field/2)
+  defp solrize(record = %MarcParser.Record{fields: fields}) do
+    %{}
+    |> get_id(record)
+    |> get_title(record)
+    |> get_author_display(record)
+    |> get_author_s(record)
+    |> get_subject_display(record)
   end
 
-  defp build_solr_field({"001", [%MarcParser.ControlField{value: value}]}, acc) do
-    acc
-    |> Map.put(:id, value)
+  defp get_id(solr_doc, record) do
+    # id = hd(record.fields["001"]).value
+    id = record
+    |> extract_field("001")
+    |> hd
+    solr_doc
+    |> Map.put(:id, id)
   end
 
-  defp build_solr_field({"245", [subfield]}, acc) do
-    title = subfield
-            |> get_subfields("abcfghknps")
-            |> Enum.join(" ")
-    acc
+  defp get_title(solr_doc, record) do
+    title = record
+    |> extract_field("245", "abcfghknps")
+    |> Enum.at(0)
+    solr_doc
     |> Map.put(:title_display, title)
   end
-
-  defp build_solr_field({"111", [subfield]}, acc) do
-    author = subfield
-            |> get_subfields("abcdfgklnpq")
-            |> Enum.join(" ")
-    acc
+  
+  defp get_author_display(solr_doc, record) do
+    author =
+      extract_field(record, "100", "aqbcdk")
+        ++ extract_field(record, "110", "abcdfgkln")
+          ++ extract_field(record, "111", "abcdfgklnpq")
+    solr_doc
     |> Map.put(:author_display, author)
   end
 
-  defp build_solr_field(_, acc) do
-    acc
+  defp get_author_s(solr_doc, record) do
+    author =
+      extract_field(record, "100", "aqbcdk")
+      ++ extract_field(record, "110", "abcdfgkln")
+      ++ extract_field(record, "111", "abcdfgklnpq")
+      ++ extract_field(record, "700", "aqbcdk")
+      ++ extract_field(record, "710", "abcdfgkln")
+      ++ extract_field(record, "711", "abcdfgklnpq")
+      |> Enum.map(&trim_punctuation/1)
+    solr_doc
+    |> Map.put(:author_s, author)
   end
 
-  defp get_subfields(%MarcParser.DataField{subfields: subfields}, subfield_keys) do
-    graphemes = subfield_keys |> String.graphemes
-    subfields
-    |> Enum.filter(fn(x) -> Enum.member?(graphemes, x.code) end)
-    |> Enum.map(&get_subfield_value/1)
-    |> Enum.filter(fn x -> x != nil end)
+  defp get_subject_display(solr_doc, record) do
+    subjects =
+      extract_field(record, "600", "abcdfklmnopqrtvxyz", indicator2: "0")
+    |> Enum.map(&trim_punctuation/1) 
+    solr_doc
+    |> Map.put(:subject_display, subjects)
   end
 
-  defp get_subfield_value(%MarcParser.SubField{value: value}) do
+  defp trim_punctuation(str) do
+    str
+    |> String.trim_trailing(".")
+  end  
+  
+  defp extract_field(record = %MarcParser.Record{}, tag) do
+    record.fields[tag]
+    |> Enum.map(&field_value/1)
+  end
+
+  defp extract_field(fields, subfields) when is_list(fields) do
+    fields
+    |> Enum.map(&field_value(&1, String.graphemes(subfields)))
+  end
+
+  defp extract_field(record, tag, subfields) do
+    case fields = record.fields[tag] do
+      nil -> []
+      _   -> fields |> extract_field(subfields)
+    end
+  end
+
+  defp extract_field(record, tag, subfields, [indicator2: indicator2]) do
+    fields = (record.fields[tag] || [])
+             |> Enum.filter(fn(field) -> field.indicator2 == indicator2 end)
+             |> extract_field(subfields)
+  end
+
+  defp field_value(%MarcParser.ControlField{value: value}) do
     value
   end
 
-  defp get_subfield_value(_) do
-    nil
+  defp field_value(%MarcParser.DataField{subfields: subfields}) do
+    subfields
+    |> subfield_join
   end
+  defp subfield_join([subfield1 = %{}]) do 
+    subfield1.value
+  end
+
+  defp subfield_join([subfield = %{} | [subfield2 = %{}]]) do
+    subfield_join([subfield.value, subfield2])
+  end
+
+  defp subfield_join([subfield | [subfield2 = %{code: code}]]) when is_binary(subfield) and code in ["v", "x", "y", "z"] do
+    "#{subfield}—#{subfield2.value}"
+  end
+
+  defp subfield_join([subfield | [subfield2 = %{}]]) when is_binary(subfield) do
+    "#{subfield} #{subfield2.value}"
+  end
+
+  defp subfield_join([subfield | [subfield2 | more_subfields]]) do
+    subfield_join([subfield_join([subfield, subfield2]) | more_subfields])
+  end
+   
+  defp field_value(%MarcParser.DataField{subfields: subfields}, subfield_codes) do
+    subfields
+    |> Enum.filter(fn(x) -> Enum.member?(subfield_codes, x.code) end)
+    |> subfield_join
+  end
+  
 end
