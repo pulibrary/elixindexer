@@ -1,10 +1,11 @@
 defmodule Elixindexer do
-  def parse_records(file_name) do
-    {:ok, handle} = File.open(file_name, read_ahead: 512*1024)
-    MarcParser.parse_marc(handle)
+  def parse_records(file_names) do
+    file_names
+    |> Enum.map(fn(x) -> File.open(x, read_ahead: 512*1024) |> elem(1) end)
+    |> MarcParser.parse_marc
     |> Flow.partition
     |> Flow.map(&solrize/1)
-    |> Enum.sort
+    |> Enum.to_list
   end
 
   defp solrize(%MarcParser.Record{fields: fields}) do

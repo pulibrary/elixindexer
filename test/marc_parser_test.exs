@@ -3,7 +3,7 @@ defmodule MarcParserTest do
 
   test "parse_records" do
     {:ok, handle} = File.open("small_set.mrc", read_ahead: 512*1024)
-    record = MarcParser.parse_marc(handle) |> Stream.take(1) |> Enum.to_list |> hd
+    record = MarcParser.parse_marc([handle]) |> Stream.take(1) |> Enum.to_list |> hd
     assert record.leader == "01323cam a2200313 a 4500"
     %{fields: fields} = record
     %{"500" => five_hundred_fields} = fields

@@ -13,9 +13,10 @@ defmodule MarcParser do
   end
   @leader_length 24
   @directory_entry_length 12
-  def parse_marc(marc_handle) do
-    MarcParser.Stream.from_handle(marc_handle)
-    |> Flow.from_enumerable
+  def parse_marc(marc_handles) do
+    marc_handles
+    |> Enum.map(&MarcParser.Stream.from_handle/1)
+    |> Flow.from_enumerables
     |> Flow.map(&parse_record/1)
   end
 
@@ -85,7 +86,7 @@ defmodule MarcParser do
 
   def generate_data_field(tag, field_data, subfield_pattern) do
     [indicators | subfields] = field_data |> :binary.split(subfield_pattern, [:global])
-    <<indicator1::binary-size(1), indicator2::binary-size(1)>> = indicators
+    <<indicator1::binary-size(1), indicator2::binary-size(1), _::binary>> = indicators
     subfields = subfields
                 |> Enum.reduce([], &generate_subfield/2)
     %MarcParser.DataField{tag: tag, indicator1: indicator1, indicator2: indicator2, subfields: subfields}
