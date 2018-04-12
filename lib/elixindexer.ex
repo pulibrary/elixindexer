@@ -22,7 +22,7 @@ defmodule Elixindexer do
     id =
       record
       |> extract_field("001")
-      |> hd
+      |> Enum.at(0)
 
     solr_doc
     |> Map.put(:id, id)
@@ -40,8 +40,10 @@ defmodule Elixindexer do
 
   defp get_author_display(solr_doc, record) do
     author =
-      extract_field(record, "100", "aqbcdk") ++
-        extract_field(record, "110", "abcdfgkln") ++ extract_field(record, "111", "abcdfgklnpq")
+      extract_field(record, "100", "aqbcdk")
+      |> Stream.concat(extract_field(record, "110", "abcdfgkln"))
+      |> Stream.concat(extract_field(record, "111", "abcdfgklnpq"))
+      |> Enum.to_list
 
     solr_doc
     |> Map.put(:author_display, author)
@@ -49,11 +51,12 @@ defmodule Elixindexer do
 
   defp get_author_s(solr_doc, record) do
     author =
-      (extract_field(record, "100", "aqbcdk") ++
-         extract_field(record, "110", "abcdfgkln") ++
-         extract_field(record, "111", "abcdfgklnpq") ++
-         extract_field(record, "700", "aqbcdk") ++
-         extract_field(record, "710", "abcdfgkln") ++ extract_field(record, "711", "abcdfgklnpq"))
+      extract_field(record, "100", "aqbcdk")
+      |> Stream.concat(extract_field(record, "110", "abcdfgkln"))
+      |> Stream.concat(extract_field(record, "111", "abcdfgklnpq"))
+      |> Stream.concat(extract_field(record, "700", "aqbcdk"))
+      |> Stream.concat(extract_field(record, "710", "abcdfgkln"))
+      |> Stream.concat(extract_field(record, "711", "abcdfgklnpq"))
       |> Enum.map(&trim_punctuation/1)
 
     solr_doc
@@ -77,7 +80,7 @@ defmodule Elixindexer do
   # Extract tag from a record.
   defp extract_field(record = %MarcParser.Record{}, tag) do
     record.fields[tag]
-    |> Enum.map(&field_value/1)
+    |> Stream.map(&field_value/1)
   end
 
   # Extract given subfield codes from a tag on a record.
@@ -92,15 +95,21 @@ defmodule Elixindexer do
   defp extract_field(record, tag, subfields, indicator2: indicator2) do
     fields =
       (record.fields[tag] || [])
-      |> Enum.filter(fn field -> field.indicator2 == indicator2 end)
+      |> Stream.filter(fn field -> field.indicator2 == indicator2 end)
       |> extract_field(subfields)
   end
 
   # Extract values from fields with given subfield codes.
   defp extract_field(fields, subfields) when is_list(fields) do
     fields
-    |> Enum.filter(fn x -> x.subfields != [] end)
-    |> Enum.map(&field_value(&1, String.graphemes(subfields)))
+    |> Stream.filter(fn x -> x.subfields != [] end)
+    |> Stream.map(&field_value(&1, String.graphemes(subfields)))
+  end
+
+  defp extract_field(fields = %Stream{}, subfields) do
+    fields
+    |> Stream.filter(fn x -> x.subfields != [] end)
+    |> Stream.map(&field_value(&1, String.graphemes(subfields)))
   end
 
   defp field_value(%MarcParser.ControlField{value: value}) do
@@ -114,7 +123,7 @@ defmodule Elixindexer do
 
   defp field_value(%MarcParser.DataField{subfields: subfields}, subfield_codes) do
     subfields
-    |> Enum.filter(fn x -> Enum.member?(subfield_codes, x.code) end)
+    |> Stream.filter(fn x -> Enum.member?(subfield_codes, x.code) end)
     |> subfield_join
   end
 
@@ -141,5 +150,9 @@ defmodule Elixindexer do
 
   defp subfield_join([subfield | [subfield2 | more_subfields]]) do
     subfield_join([subfield_join([subfield, subfield2]) | more_subfields])
+  end
+
+  defp subfield_join(stream) do
+    subfield_join(stream |> Enum.to_list)
   end
 end
