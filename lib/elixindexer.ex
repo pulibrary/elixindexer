@@ -8,17 +8,56 @@ defmodule Elixindexer do
     |> Enum.sort()
   end
 
-  defp solrize(record = %MarcParser.Record{fields: fields}) do
+  defp solrize(record = %MarcParser.Record{leader: leader, fields: fields}) do
     %{}
     |> get_id(record)
     |> get_title(record)
     |> get_author_display(record)
     |> get_author_s(record)
     |> get_subject_display(record)
+    |> get_format(record)
+  end
+
+# Audio
+# Book
+# Data file
+# Journal
+# Manuscript
+# Map
+# Musical score
+# Senior thesis
+# Video/Projected medium
+# Visual material
+
+# Book => ta abcdim
+# Journal => a s
+# Data File => m
+# Audio => ij
+# Visual Material => kor
+# Video/Project medium => g
+# Musical score => cd
+# Map => ef
+# Manuscript => dfpt
+# Senior thesis (Marc 502 $b = Princeton University)
+
+  defp get_format(solr_doc, record) do
+    format =
+      String.graphemes(record.leader)
+      |> Enum.slice(6, 2)
+      |> determine_format
+    Map.put(solr_doc, :format, format)
+  end
+
+  defp determine_format(leader_67) do
+    case hd(leader_67) do
+      #Enum.any?(["a", "t"], fn(x) -> rem) -> ["Book"]
+      "a" -> ["Book"]
+      "t" => ["Book"]
+      _ -> ["Unknown"]
+    end
   end
 
   defp get_id(solr_doc, record) do
-    # id = hd(record.fields["001"]).value
     id =
       record
       |> extract_field("001")
@@ -66,6 +105,11 @@ defmodule Elixindexer do
   defp get_subject_display(solr_doc, record) do
     subjects =
       extract_field(record, "600", "abcdfklmnopqrtvxyz", indicator2: "0")
+      |> Stream.concat(extract_field(record, "610", "abfklmnoprstvxyz"))
+      |> Stream.concat(extract_field(record, "611", "abcdefgklnpqstvxyz"))
+      |> Stream.concat(extract_field(record, "630", "adfgklmnoprstvxyz"))
+      |> Stream.concat(extract_field(record, "650", "abcvxyz"))
+      |> Stream.concat(extract_field(record, "651", "avxyz"))
       |> Enum.map(&trim_punctuation/1)
 
     solr_doc

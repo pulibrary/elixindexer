@@ -16,6 +16,6 @@ defmodule ElixindexerTest do
                                 "Bach, Johann Sebastian, 1685-1750—Congresses",
                                 "Bach, Johann Sebastian, 1685-1750—Influence—Congresses"
                               ]
+    assert record.format == ["Book"]
   end
 end
-
