@@ -49,10 +49,22 @@ defmodule Elixindexer do
   end
 
   defp determine_format(leader_67) do
-    case hd(leader_67) do
-      #Enum.any?(["a", "t"], fn(x) -> rem) -> ["Book"]
-      "a" -> ["Book"]
-      "t" => ["Book"]
+    case position_6 = hd(leader_67) do
+      "a" -> ["Journal"]
+      "t" -> ["Book"]
+      "m" -> ["Data file"]
+      "i" -> ["Audio"]
+      "j" -> ["Audio"]
+      "k" -> ["Visual material"]
+      "o" -> ["Visual material"]
+      "r" -> ["Visual material"]
+      "c" -> ["Musical score"]
+      "d" -> ["Musical score"]
+      "e" -> ["Map"]
+      "f" -> ["Map", "Manuscript"]
+      "d" -> ["Manuscript"]
+      "p" -> ["Manuscript"]
+      "t" -> ["Manuscript"]
       _ -> ["Unknown"]
     end
   end
