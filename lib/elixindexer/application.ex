@@ -8,6 +8,7 @@ defmodule Elixindexer.Application do
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
+      :hackney_pool.child_spec(:solr_pool, [timeout: 60_000, max_connections: 100])
       # Starts a worker by calling: Elixindexer.Worker.start_link(arg)
       # {Elixindexer.Worker, arg},
     ]

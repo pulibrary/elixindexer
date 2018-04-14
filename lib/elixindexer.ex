@@ -4,7 +4,35 @@ defmodule Elixindexer do
     MarcParser.parse_marc(handle)
     |> Flow.partition()
     |> Flow.map(&solrize/1)
-    |> Enum.sort()
+    |> Flow.reduce(fn -> [] end, fn item, list -> [ item | list] end)
+    |> Flow.emit(:state)
+    |> Flow.map(&index/1)
+    |> Enum.to_list
+    {:ok, _} = solr_commit
+    output
+  end
+
+  defp index(records) do
+    case output = solr_post(records) do
+      {:ok, _} -> IO.puts("Indexed #{length(records)} records")
+      {:error, _} -> IO.inspect(output)
+    end
+  end
+
+  defp solr_post(records) do
+    HTTPoison.post(solr_url, :jiffy.encode(records), [{"Content-type", "application/json"}], solr_opts)
+  end
+
+  defp solr_commit do
+    HTTPoison.get("#{solr_url}?commit=true", [], solr_opts)
+  end
+
+  defp solr_url do
+    "http://localhost:8888/solr/blacklight-core-test/update"
+  end
+
+  defp solr_opts do
+    [timeout: 60_000, recv_timeout: 60_000, hackney: [pool: :solr_pool]]
   end
 
   defp solrize(record = %MarcParser.Record{fields: fields}) do
