@@ -1,6 +1,12 @@
 defmodule Elixindexer do
-  def parse_records(file_name) do
+  def parse_records(file_name) when is_binary(file_name) do
     {:ok, handle} = File.open(file_name, read_ahead: 512*1024)
+    output = parse_records(handle)
+    handle |> File.close
+    output
+  end
+
+  def parse_records(handle) do
     MarcParser.parse_marc(handle)
     |> Flow.partition
     |> Flow.map(&solrize/1)
