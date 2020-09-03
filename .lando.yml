@@ -1,0 +1,11 @@
+name: elixindexer
+services:
+  elixindexer_test_solr:
+    type: solr:8.4
+    portforward: true
+    core: blacklight-core-test
+    config:
+      dir: "solr/conf"
+proxy:
+  elixindexer_test_solr:
+    - elixindexer.test.solr.lndo.site:8983

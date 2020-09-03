@@ -3,7 +3,7 @@ defmodule ElixindexerTest do
   doctest Elixindexer
 
   test "parse_records" do
-    records = Elixindexer.parse_records("small_set.mrc")
+    records = Elixindexer.parse_records("small_set.mrc") |> Enum.to_list
     assert length(records) == 31
     record = records |> Enum.find(fn(x) -> x.id == "6000001" end)
     assert record.id == "6000001"
