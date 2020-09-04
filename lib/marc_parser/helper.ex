@@ -5,6 +5,13 @@ defmodule MarcParser.Helper do
     |> Enum.map(&field_value/1)
   end
 
+  # Extract values from fields with given subfield codes.
+  def extract_field(fields, subfields) when is_list(fields) do
+    fields
+    |> Enum.filter(fn x -> x.subfields != [] end)
+    |> Enum.map(&field_value(&1, String.graphemes(subfields)))
+  end
+
   # Extract given subfield codes from a tag on a record.
   def extract_field(record, tag, subfields) do
     case fields = record.fields[tag] do
@@ -15,17 +22,9 @@ defmodule MarcParser.Helper do
 
   # Extract given subfield codes from a tag on a record with given indicator.
   def extract_field(record, tag, subfields, indicator2: indicator2) do
-    fields =
-      (record.fields[tag] || [])
-      |> Enum.filter(fn field -> field.indicator2 == indicator2 end)
-      |> extract_field(subfields)
-  end
-
-  # Extract values from fields with given subfield codes.
-  def extract_field(fields, subfields) when is_list(fields) do
-    fields
-    |> Enum.filter(fn x -> x.subfields != [] end)
-    |> Enum.map(&field_value(&1, String.graphemes(subfields)))
+    (record.fields[tag] || [])
+    |> Enum.filter(fn field -> field.indicator2 == indicator2 end)
+    |> extract_field(subfields)
   end
 
   defp field_value(%MarcParser.ControlField{value: value}) do

@@ -3,7 +3,6 @@ defmodule Elixindexer do
 
   def parse_records(file_name) do
     {:ok, handle} = File.open(file_name, read_ahead: 512 * 1024)
-
     MarcParser.parse_marc(handle)
     |> Flow.partition(window: Flow.Window.count(500))
     |> Flow.map(&solrize/1)
