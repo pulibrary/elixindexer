@@ -2,6 +2,6 @@
    use Benchfella
 
    bench "parse large file" do
-     Elixindexer.parse_records("small_set.mrc")
+     Elixindexer.parse_records("20.mrc") |> Enum.to_list
    end
  end
