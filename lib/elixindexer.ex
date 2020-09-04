@@ -1,13 +1,15 @@
 defmodule Elixindexer do
   import MarcParser.Helper
+
   def parse_records(file_name) do
     {:ok, handle} = File.open(file_name, read_ahead: 512 * 1024)
-    output = MarcParser.parse_marc(handle)
+
+    MarcParser.parse_marc(handle)
     |> Flow.partition(window: Flow.Window.count(500))
     |> Flow.map(&solrize/1)
   end
 
-  defp solrize(record = %MarcParser.Record{fields: fields}) do
+  defp solrize(record = %MarcParser.Record{fields: _}) do
     %{}
     |> get_id(record)
     |> get_title(record)
@@ -72,5 +74,4 @@ defmodule Elixindexer do
     str
     |> String.trim_trailing(".")
   end
-
 end
